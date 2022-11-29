@@ -7,16 +7,19 @@
     "type": "git",
     "url": ""
   },
-  "dependencies": {},
+  "dependencies": {
+    "gulp-webserver": "^0.9.1",
+    "http-proxy-middleware": "^2.0.6"
+  },
   "scripts": {
-    "servers": "NODE_ENV=development gulp watch",
-    "dev-server":"NODE_ENV=development gulp dev_server",
-    "node-server": "NODE_ENV=development nodemon server/app.js",
-    "prod": "NODE_ENV=production gulp prod",
-    "dev-tests": "NODE_ENV=development gulp tests",
-    "image-min": "NODE_ENV=development gulp images",
-    "sass": "NODE_ENV=development gulp sass",
-    "third-party": "NODE_ENV=development gulp vendor"
+    "servers": "SET NODE_ENV=development & gulp watch",
+    "dev-server": "SET NODE_ENV=development & gulp dev_server",
+    "node-server": "SET NODE_ENV=development & nodemon server/app.js",
+    "prod": "SET NODE_ENV=production & gulp prod",
+    "dev-tests": "SET NODE_ENV=development & gulp tests",
+    "image-min": "SET NODE_ENV=development & gulp images",
+    "sass": "SET NODE_ENV=development & gulp sass",
+    "third-party": "SET NODE_ENV=development & gulp vendor"
   },
   "keywords": [
     "Web",

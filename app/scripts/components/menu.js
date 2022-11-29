@@ -10,10 +10,12 @@ class Menu extends React.Component {
      * Main constructor for the Menu Class
      * @memberof Menu
      */
-    constructor() {
+    constructor(props) {
         super();
+        this.filterInputRef = React.createRef();
         this.state = {
-            showingSearch: false
+            showingSearch: false,
+            searchHandler: props.searchHandler
         };
     }
 
@@ -27,6 +29,7 @@ class Menu extends React.Component {
         this.setState({
             showingSearch: !this.state.showingSearch
         });
+        setTimeout(_=> this.filterInputRef.current.focus())
     }
 
     /**
@@ -34,12 +37,8 @@ class Menu extends React.Component {
      * @memberof Menu
      * @param e [Object] - the event from a text change handler
      */
-    onSearch(e) {
-        
-        // Start Here
-        // ...
-        
-
+    onSearch(event) {
+        this.state.searchHandler(event.currentTarget.value);
     }
 
     /**
@@ -66,15 +65,16 @@ class Menu extends React.Component {
                             <a href="#" onClick={(e) => this.showSearchContainer(e)}>
                                 <i className="material-icons search">search</i>
                             </a>
+                            <div className={(this.state.showingSearch ? "showing " : "") + "search-container"}>
+                                <input ref={this.filterInputRef} type="text" onKeyUp={(e) => this.onSearch(e)} />
+                                <a href="#" onClick={(e) => this.showSearchContainer(e)}>
+                                    <i className="material-icons close">close</i>
+                                </a>
+                            </div>
                         </nav>
                     </div>
                 </div>
-                <div className={(this.state.showingSearch ? "showing " : "") + "search-container"}>
-                    <input type="text" onChange={(e) => this.onSearch(e)} />
-                    <a href="#" onClick={(e) => this.showSearchContainer(e)}>
-                        <i className="material-icons close">close</i>
-                    </a>
-                </div>
+
             </header>
         );
     }

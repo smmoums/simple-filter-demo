@@ -34,9 +34,8 @@ const port      = 3035;
  */
 http.createServer(function (req, res) {
     // .. Here you can create your data response in a JSON format
-    
-    
-    res.write("Response goes in here..."); // Write out the default response
+    console.log('request in')
+    res.write(JSON.stringify(data)); // Write out the default response
     res.end(); //end the response
 }).listen( port );
 

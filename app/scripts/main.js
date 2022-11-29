@@ -17,13 +17,43 @@ import ReactDOM from 'react-dom';
 
 import Menu from './components/menu';
 import Home from './components/home';
+import List from './components/list';
 
 
 /**
  * We can start our initial App here in the main.js file
  */
 class App extends React.Component {
+    constructor() {
+        super();
+        sessionStorage.removeItem('goodsList');
+        this.state = {
+            listData: [],
+            loading: false
+        }
+        this.searchHandler = this.searchHandler.bind(this);
+    }
 
+    searchHandler(filterString) {
+        let goodsList = sessionStorage.getItem('goodsList');
+        if (goodsList) {
+            this.setState({ filterString });
+        } else {
+            if (this.state.loading === false) {
+                this.setState({ loading: true });
+                fetch('/api').then(
+                    res => res.text().then(
+                        data => {
+                            let listData = JSON.parse(data);
+                            this.setState({ listData, filterString, loading: false});
+                            sessionStorage.setItem('goodsList', listData);
+                        }
+                    )
+                )
+            }
+        }
+
+    }
     /**
      * Renders the default app in the window, we have assigned this to an element called root.
      * 
@@ -33,8 +63,14 @@ class App extends React.Component {
     render() {
         return (
             <div className="App">
-                <Menu />
-                <Home />
+                <Menu searchHandler={this.searchHandler} />
+                {
+                    this.state.listData.length
+                        ? <List listData={this.state.listData} filterString={this.state.filterString} />
+                        : <Home />
+                }
+
+
             </div>
         );
     }

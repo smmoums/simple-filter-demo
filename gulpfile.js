@@ -265,6 +265,21 @@ gulp.task('prod', ['image', 'templates', 'scripts', 'sass'], function() {
 
 });
 
+var webserver = require('gulp-webserver');
+
+var { createProxyMiddleware } = require('http-proxy-middleware') // require('http-proxy-middleware');
+ 
+/**
+ * Configure proxy middleware
+ */
+var jsonPlaceholderProxy = createProxyMiddleware('/api', {
+  target: 'http://127.0.0.1:3035',
+  changeOrigin: true,             // for vhosted sites, changes host header to match to target's host
+  pathRewrite: {
+    '^/api': ''
+  },
+  logLevel: 'debug'
+})
 
 
 // Main task Runner for watching all the scripts, start by running through the tasks
@@ -273,8 +288,10 @@ gulp.task('watch', ['images', 'templates', 'scripts', 'sass', 'server'], functio
 	// Run the browser sync on port 3030 (no conflicts)
 	browserSync.init({
 		server: './' + _devFolder,
-		port: config.dev_port || 3030
+		port: config.dev_port || 3030,
+		middleware: [jsonPlaceholderProxy]
 	});
+	
 	gulp.watch( './app/**/*.scss', ['sass'] );
 	gulp.watch(['./app/scripts/**/*.jsx', './app/scripts/**/*.js'], ['scripts'] );
 	gulp.watch(['./app/**/*.mustache', './app/**/*.json', './app/**/*.html'], ['mustache']);
