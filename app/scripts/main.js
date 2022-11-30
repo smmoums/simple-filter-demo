@@ -14,7 +14,7 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-
+import { HashRouter, Routes, Route } from "react-router-dom";
 import Menu from './components/menu';
 import Home from './components/home';
 import List from './components/list';
@@ -35,24 +35,7 @@ class App extends React.Component {
     }
 
     searchHandler(filterString) {
-        let goodsList = sessionStorage.getItem('goodsList');
-        if (goodsList) {
-            this.setState({ filterString });
-        } else {
-            if (this.state.loading === false) {
-                this.setState({ loading: true });
-                fetch('/api').then(
-                    res => res.text().then(
-                        data => {
-                            let listData = JSON.parse(data);
-                            this.setState({ listData, filterString, loading: false});
-                            sessionStorage.setItem('goodsList', listData);
-                        }
-                    )
-                )
-            }
-        }
-
+        this.setState({ filterString });
     }
     /**
      * Renders the default app in the window, we have assigned this to an element called root.
@@ -64,13 +47,14 @@ class App extends React.Component {
         return (
             <div className="App">
                 <Menu searchHandler={this.searchHandler} />
-                {
-                    this.state.listData.length
-                        ? <List listData={this.state.listData} filterString={this.state.filterString} />
-                        : <Home />
-                }
-
-
+                <HashRouter>
+                    <Routes>
+                        
+                        <Route path="/" element={<Home/>}/>
+                        <Route path="/products" element={<List filterString={this.state.filterString}/>}/>
+                        
+                    </Routes>
+                </HashRouter>
             </div>
         );
     }

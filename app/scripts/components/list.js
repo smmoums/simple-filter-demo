@@ -5,19 +5,49 @@ class List extends React.Component {
     constructor(props) {
         super();
         this.state = {
-            listData: props.listData,
-            filterString: props.filterString
+            goodsList: [],
+            filterString: props.filterString || '',
+            loading: false,
+            loadErr: false
         };
-        this.showFilterGoods = this.showFilterGoods.bind(this);
+        this.showGoodsList = this.showGoodsList.bind(this);
+        this.getGoodsData = this.getGoodsData.bind(this);
     }
+
+    componentDidMount(){
+        this.getGoodsData()
+    }
+
     shouldComponentUpdate(props){
         this.state.filterString = props.filterString;
         return true;
     }
 
-    showFilterGoods(){
-        const result =[];
-        this.state.listData.map(
+    getGoodsData(){
+        let goodsJson = sessionStorage.getItem('goodsList');
+        if (goodsJson) {
+            this.setState( {goodsList: JSON.parse(goodsJson)} );
+        }else{
+            this.setState({ loading: true });
+            fetch('/api').then(
+                res => res.text().then(
+                    data => {
+                        sessionStorage.setItem('goodsList', data);
+                        let goodsList = JSON.parse(data);
+                        this.setState( {goodsList,  loading: false} );
+                    }
+                ),
+                err => {
+                    this.setState( {loading: false, loadErr: true} );
+                    console.log(err)
+                }
+            )    
+        }
+    }
+
+    showGoodsList(){
+        const result =[];console.log(this.state.goodsList)
+        this.state.goodsList.map(
             singleData=>{
                 if(this.goodMatchHandler(singleData, this.state.filterString)){
                     singleData.price=parseInt(singleData.price)
@@ -32,27 +62,37 @@ class List extends React.Component {
             }
         )
         
-        return <ul className='goodsListContainer'>
+        return (<ul className='goodsListContainer'>
                 {
                     result.length> 0 ? result : <div className='emptyResult'>no matching goods found ... </div>
                 }
-            </ul>;
+            </ul>);
     }
 
     goodMatchHandler(goodData, filterString){
         let ifMatch = false;
-        if(goodData.name.toLowerCase().indexOf(filterString.toLowerCase()) > -1) ifMatch = true;
-        goodData.tags.map(tag => (tag.indexOf(filterString.toLowerCase()) > -1) ? ifMatch = true : '');
+        // check goods name
+        if( goodData.name.toLowerCase().indexOf( filterString.toLowerCase()) > -1 ) ifMatch = true;
+        // check tags
+        goodData.tags.map(
+            tag => {
+                if(tag.indexOf( filterString.toLowerCase()) > -1 ){
+                    ifMatch = true;
+                } 
+            }
+        )
         return ifMatch;
     }
 
     render(){
+        let warningMSG;
+        if(this.state.loading) warningMSG = 'loading data, please waite for a second';
+        if(this.state.loadErr) warningMSG = 'failed to get info, please try refresh later';
         return (
             <section id="searchList">
-                {this.showFilterGoods()}
+                {warningMSG || this.showGoodsList()}
             </section>
-        )
-        
+        ) 
     } 
 }
 

@@ -25,11 +25,17 @@ class Menu extends React.Component {
      * @param e [Object] - the event from a click handler
      */
     showSearchContainer(e) {
-        e.preventDefault();
         this.setState({
             showingSearch: !this.state.showingSearch
         });
-        setTimeout(_=> this.filterInputRef.current.focus())
+        setTimeout( _=> this.filterInputRef.current.focus())
+    }
+
+    clearFilter(e){
+        e.preventDefault();
+        
+        this.filterInputRef.current.value = '';
+        this.state.searchHandler('');
     }
 
     /**
@@ -56,18 +62,18 @@ class Menu extends React.Component {
                         <nav>
                             <a href="#" className="nav-item">HOLIDAY</a>
                             <a href="#" className="nav-item">WHAT'S NEW</a>
-                            <a href="#" className="nav-item">PRODUCTS</a>
+                            <a href="#/products" className="nav-item">PRODUCTS</a>
                             <a href="#" className="nav-item">BESTSELLERS</a>
                             <a href="#" className="nav-item">GOODBYES</a>
                             <a href="#" className="nav-item">STORES</a>
                             <a href="#" className="nav-item">INSPIRATION</a>
 
-                            <a href="#" onClick={(e) => this.showSearchContainer(e)}>
+                            <a href="#/products" onClick={(e) => this.showSearchContainer(e)}>
                                 <i className="material-icons search">search</i>
                             </a>
                             <div className={(this.state.showingSearch ? "showing " : "") + "search-container"}>
                                 <input ref={this.filterInputRef} type="text" onKeyUp={(e) => this.onSearch(e)} />
-                                <a href="#" onClick={(e) => this.showSearchContainer(e)}>
+                                <a onClick={(e) => this.clearFilter(e)}>
                                     <i className="material-icons close">close</i>
                                 </a>
                             </div>
